@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Text Formatting</title>
+    <style>
+        /* Minimal styling for the table */
+        table {
+            width: 70%;
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        td {
+            background-color: #fff;
+        }
+
+        caption {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            color: #333;
+        }
+
+        /* Alternating row colors */
+        tbody tr:nth-child(odd) {
+            background-color: #f2f2f2;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        /* Hover effect for rows */
+        tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        /* Border styling for better separation */
+        td, th {
+            border: 1px solid #ddd;
+        }
+
+        /* Adding some space around the table */
+        table, th, td {
+            border-spacing: 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Information</h1>
+<hr>
+
+<table>
+    <caption>Student Information Data</caption>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Roll no.</th>
+            <th>Marks</th>
+            <th>Age</th>
+            <th>Class</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Tejal</td>
+            <td>CM25060</td>
+            <td>90</td>
+            <td>18</td>
+            <td>CSE-AIML</td>
+        </tr>
+        <tr>
+            <td>Saloni</td>
+            <td>CM25061</td>
+            <td>91</td>
+            <td>19</td>
+            <td>CSE-AIDS</td>
+        </tr>
+        <tr>
+            <td>Sumit</td>
+            <td>CM25062</td>
+            <td>92</td>
+            <td>20</td>
+            <td>CSE</td>
+        </tr>
+        <tr>
+            <td>Vanshika</td>
+            <td>CM25063</td>
+            <td>94</td>
+            <td>17</td>
+            <td>IT</td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
