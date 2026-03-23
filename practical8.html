@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="styles.css">
+<style>
+/* Body styling */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #f8bbd0, #f3e5f5); /* Gradient background */
+    text-align: center;
+}
+
+/* Header Styling */
+header {
+    padding: 20px;
+    background-color: #6200ea; /* Purple background */
+    color: white;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header p {
+    margin: 10px 0 0;
+}
+
+/* Gallery Section */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Individual Image Containers */
+.image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transition effect */
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease; /* Smooth transition for zoom effect */
+}
+
+/* Hover Effect */
+.image-container:hover {
+    transform: scale(1.05); /* Slight zoom-in effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
+}
+
+.image-container:hover img {
+    transform: scale(1.1); /* Zoom in the image on hover */
+}
+
+/* Footer Styling */
+footer {
+    padding: 10px;
+    background-color: #6200ea; /* Matching footer background */
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+</style>
+
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Image Gallery</h1>
+        <p>Hover over the images to see the effect!</p>
+    </header>
+
+    <!-- Gallery Section -->
+    <div class="gallery">
+        <div class="image-container">
+            <img src="https://ih1.redbubble.net/image.1824652974.6749/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg" "height = 500px" "weigth = 500px"alt="Image 1">
+        </div>
+        <div class="image-container">
+            <img src="https://i.ytimg.com/vi/562Iu2Fv-7c/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCKe_C_50iF8nFeADi3pvMqps6PNQ" "height = 500px" "weigth = 500px"alt="Image 2">
+        </div>
+        <div class="image-container">
+            <img src="https://img.freepik.com/premium-vector/tom-jerry-cartoon-vector-art-illustration_1025825-1013.jpg?semt=ais_hybrid&w=740&q=80" "height = 500px" "weigth = 500px"alt="Image 3">
+        </div>
+        <div class="image-container">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGVZUK-sZSuqNJ-t6q68cA6MQAGX431ZoXLQH5afMksN6vSvjmnxuJayIzdDZDJQq-B9HsngNRBmk7KMQmoxZjl8vQmMSgGAogCjTm5NI&s=10""height = 500px" "weigth = 500px" alt="Image 4">
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Image Gallery</p>
+    </footer>
+
+</body>
+</html>
