@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HTML5 APIs Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0c10;
+      --surface: #13151a;
+      --surface2: #1a1d24;
+      --border: #252830;
+      --border2: #31353f;
+      --purple: #8b7fe8;
+      --purple-dim: #534ab7;
+      --purple-bg: #1a1830;
+      --teal: #2ec4a0;
+      --teal-dim: #0f6e56;
+      --teal-bg: #061f18;
+      --coral: #e8745a;
+      --coral-dim: #993c1d;
+      --coral-bg: #221208;
+      --text: #e4e2ef;
+      --muted: #6b6b7e;
+      --muted2: #44454f;
+      --mono: 'DM Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 3rem 2rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: -80px;
+      width: 340px; height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #534ab740 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .header-tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+    .grad { background: linear-gradient(110deg, var(--purple), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    header p {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      max-width: 520px;
+    }
+    .nav-pills {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .pill {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: 99px;
+      border: 1px solid;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .pill-purple { border-color: var(--purple-dim); color: var(--purple); }
+    .pill-purple:hover { background: var(--purple-bg); }
+    .pill-teal { border-color: var(--teal-dim); color: var(--teal); }
+    .pill-teal:hover { background: var(--teal-bg); }
+    .pill-coral { border-color: var(--coral-dim); color: var(--coral); }
+    .pill-coral:hover { background: var(--coral-bg); }
+
+    /* ── MAIN LAYOUT ── */
+    main { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; max-width: 960px; margin: 0 auto; }
+
+    /* ── SECTION CARD ── */
+    .api-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .api-card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .api-num {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 500;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+    }
+    .num-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-dim); }
+    .num-teal   { background: var(--teal-bg);   color: var(--teal);   border: 1px solid var(--teal-dim); }
+    .num-coral  { background: var(--coral-bg);  color: var(--coral);  border: 1px solid var(--coral-dim); }
+    .api-card-header h2 { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
+    .api-desc { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-left: auto; }
+    .api-body { padding: 1.5rem; }
+
+    /* ── DRAG & DROP ── */
+    .dd-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 560px) { .dd-grid { grid-template-columns: 1fr; } }
+    .dd-col-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.6rem;
+    }
+    .drop-zone {
+      min-height: 180px;
+      border: 1.5px dashed var(--border2);
+      border-radius: 12px;
+      padding: 0.75rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .drop-zone.over {
+      border-color: var(--purple);
+      background: #8b7fe810;
+    }
+    .drag-card {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      margin-bottom: 0.5rem;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      user-select: none;
+    }
+    .drag-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px #0006; }
+    .drag-card:active { cursor: grabbing; }
+    .drag-card.dragging { opacity: 0.3; transform: scale(0.97); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .empty-msg { font-family: var(--mono); font-size: 0.7rem; color: var(--muted2); text-align: center; padding: 1.2rem 0; }
+    .dd-hint { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.75rem; text-align: center; }
+
+    /* ── GEOLOCATION ── */
+    .geo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: 1px solid var(--teal-dim);
+      color: var(--teal);
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.6rem 1.3rem;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, transform 0.1s;
+      letter-spacing: 0.01em;
+      margin-bottom: 1.25rem;
+    }
+    .geo-btn:hover { background: var(--teal-bg); }
+    .geo-btn:active { transform: scale(0.97); }
+    .geo-btn svg { width: 16px; height: 16px; }
+    .geo-status-bar {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.5rem 0.85rem;
+      border-radius: 7px;
+      border-left: 3px solid var(--teal);
+      background: var(--teal-bg);
+      color: var(--teal);
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .geo-status-bar.err { border-color: var(--coral); background: var(--coral-bg); color: var(--coral); }
+    .geo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.6rem;
+      display: none;
+    }
+    .geo-tile {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+    }
+    .geo-tile-label { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+    .geo-tile-val { font-family: var(--mono); font-size: 0.9rem; color: var(--teal); font-weight: 500; }
+
+    /* ── WEB STORAGE ── */
+    .storage-tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .tab-btn {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 7px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .tab-btn.active { background: var(--coral-bg); color: var(--coral); border-color: var(--coral-dim); }
+    .tab-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
+    .storage-panel { display: none; }
+    .storage-panel.active { display: block; }
+    .store-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .store-input {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 7px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      padding: 0.5rem 0.75rem;
+      outline: none;
+      transition: border-color 0.15s;
+      flex: 1;
+      min-width: 80px;
+    }
+    .store-input:focus { border-color: var(--coral); }
+    .store-save-btn {
+      background: var(--coral-bg);
+      border: 1px solid var(--coral-dim);
+      color: var(--coral);
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .store-save-btn:hover { background: var(--coral); color: #220e08; }
+    .store-entries { max-height: 200px; overflow-y: auto; margin-bottom: 0.75rem; }
+    .store-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0.7rem;
+      border-radius: 7px;
+      margin-bottom: 3px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+    .store-entry:nth-child(odd) { background: var(--surface2); }
+    .entry-key-col { color: var(--muted); flex-shrink: 0; margin-right: 12px; }
+    .entry-val-col { color: var(--coral); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .del-btn {
+      background: none;
+      border: none;
+      color: var(--muted2);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0 4px;
+      line-height: 1;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .del-btn:hover { color: var(--coral); }
+    .store-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .store-count { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); }
+    .clear-btn {
+      background: none;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .clear-btn:hover { background: var(--surface2); color: var(--text); }
+    .store-note {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted2);
+      margin-top: 0.6rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      background: var(--surface2);
+      border-left: 2px solid var(--border2);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted2);
+      padding: 1.5rem 2rem 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">// html5 apis — live demo</div>
+  <h1>Browser <span class="grad">Superpowers</span></h1>
+  <p>Drag &amp; Drop · Geolocation · Web Storage — all running natively in your browser, no libraries.</p>
+  <div class="nav-pills">
+    <a href="#dd" class="pill pill-purple">01 · Drag &amp; Drop</a>
+    <a href="#geo" class="pill pill-teal">02 · Geolocation</a>
+    <a href="#ws" class="pill pill-coral">03 · Web Storage</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══ 01 DRAG & DROP ══════════════════════════════════════════════ -->
+  <div class="api-card" id="dd">
+    <div class="api-card-header">
+      <span class="api-num num-purple">API 01</span>
+      <h2>Drag &amp; Drop</h2>
+      <span class="api-desc">HTMLDraggable / DataTransfer</span>
+    </div>
+    <div class="api-body">
+      <div class="dd-grid">
+        <div>
+          <div class="dd-col-label">Backlog</div>
+          <div class="drop-zone" id="zone-todo"
+               ondragover="ddOver(event,'zone-todo')"
+               ondragleave="ddLeave('zone-todo')"
+               ondrop="ddDrop(event,'zone-todo')">
+            <div class="drag-card" draggable="true" data-id="t1"
+                 ondragstart="ddStart(event,'t1')" ondragend="ddEnd(event)">
+              <span class="dot" style="background:#8b7fe8"></span> Design system tokens
+            </div>
+            <div class="drag-card" draggable="true" data-id="t2"
+                 ondragstart="ddStart(event,'t2')" ondragend="ddEnd(event)">
+              <span class="dot" style="background:#b5a8f5"></span> API rate-limit refactor
+            </div>
+            <div class="drag-card" draggable="true" data-id="t3"
+                 ondragstart="ddStart(event,'t3')" ondragend="ddEnd(event)">
+              <span class="dot" style="background:#534ab7"></span> Write migration docs
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="dd-col-label">Done ✓</div>
+          <div class="drop-zone" id="zone-done"
+               ondragover="ddOver(event,'zone-done')"
+               ondragleave="ddLeave('zone-done')"
+               ondrop="ddDrop(event,'zone-done')">
+            <div class="empty-msg" id="done-empty">Drop completed tasks here</div>
+          </div>
+        </div>
+      </div>
+      <p class="dd-hint">← drag any card across →</p>
+    </div>
+  </div>
+
+  <!-- ══ 02 GEOLOCATION ══════════════════════════════════════════════ -->
+  <div class="api-card" id="geo">
+    <div class="api-card-header">
+      <span class="api-num num-teal">API 02</span>
+      <h2>Geolocation</h2>
+      <span class="api-desc">navigator.geolocation</span>
+    </div>
+    <div class="api-body">
+      <button class="geo-btn" onclick="geoLocate()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+          <path d="M12 5a7 7 0 1 0 0 14A7 7 0 0 0 12 5z"/>
+        </svg>
+        Detect my location
+      </button>
+      <div class="geo-status-bar" id="geo-status"></div>
+      <div class="geo-grid" id="geo-grid">
+        <div class="geo-tile"><div class="geo-tile-label">Latitude</div><div class="geo-tile-val" id="g-lat">—</div></div>
+        <div class="geo-tile"><div class="geo-tile-label">Longitude</div><div class="geo-tile-val" id="g-lon">—</div></div>
+        <div class="geo-tile"><div class="geo-tile-label">Accuracy</div><div class="geo-tile-val" id="g-acc">—</div></div>
+        <div class="geo-tile"><div class="geo-tile-label">Altitude</div><div class="geo-tile-val" id="g-alt">—</div></div>
+        <div class="geo-tile"><div class="geo-tile-label">Speed</div><div class="geo-tile-val" id="g-spd">—</div></div>
+        <div class="geo-tile"><div class="geo-tile-label">Timestamp</div><div class="geo-tile-val" id="g-ts">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 03 WEB STORAGE ══════════════════════════════════════════════ -->
+  <div class="api-card" id="ws">
+    <div class="api-card-header">
+      <span class="api-num num-coral">API 03</span>
+      <h2>Web Storage</h2>
+      <span class="api-desc">localStorage · sessionStorage</span>
+    </div>
+    <div class="api-body">
+      <div class="storage-tabs">
+        <button class="tab-btn active" onclick="wsTab('ls')">localStorage</button>
+        <button class="tab-btn" onclick="wsTab('ss')">sessionStorage</button>
+      </div>
+
+      <!-- localStorage panel -->
+      <div class="storage-panel active" id="panel-ls">
+        <div class="store-form">
+          <input class="store-input" id="ls-key" placeholder="key" style="max-width:130px">
+          <input class="store-input" id="ls-val" placeholder="value">
+          <button class="store-save-btn" onclick="wsSave('ls')">Save</button>
+        </div>
+        <div class="store-entries" id="ls-list"></div>
+        <div class="store-footer">
+          <span class="store-count" id="ls-count">0 entries</span>
+          <button class="clear-btn" onclick="wsClear('ls')">Clear all</button>
+        </div>
+        <div class="store-note">localStorage persists across browser sessions — data survives a page refresh or tab close.</div>
+      </div>
+
+      <!-- sessionStorage panel -->
+      <div class="storage-panel" id="panel-ss">
+        <div class="store-form">
+          <input class="store-input" id="ss-key" placeholder="key" style="max-width:130px">
+          <input class="store-input" id="ss-val" placeholder="value">
+          <button class="store-save-btn" onclick="wsSave('ss')">Save</button>
+        </div>
+        <div class="store-entries" id="ss-list"></div>
+        <div class="store-footer">
+          <span class="store-count" id="ss-count">0 entries</span>
+          <button class="clear-btn" onclick="wsClear('ss')">Clear all</button>
+        </div>
+        <div class="store-note">sessionStorage is cleared when the tab is closed — data is private to this session only.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>html5 apis demo &mdash; drag_drop · geolocation · web_storage &mdash; no frameworks, pure browser APIs</footer>
+
+<script>
+/* ════════════════════════════════════════════
+   01 · DRAG & DROP
+════════════════════════════════════════════ */
+let draggingId = null;
+
+function ddStart(e, id) {
+  draggingId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
+  setTimeout(() => { const c = document.querySelector(`[data-id="${id}"]`); if(c) c.classList.add('dragging'); }, 0);
+}
+function ddEnd(e) { e.target.classList.remove('dragging'); }
+function ddOver(e, zoneId) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.getElementById(zoneId).classList.add('over');
+}
+function ddLeave(zoneId) { document.getElementById(zoneId).classList.remove('over'); }
+function ddDrop(e, zoneId) {
+  e.preventDefault();
+  const zone = document.getElementById(zoneId);
+  zone.classList.remove('over');
+  const id = e.dataTransfer.getData('text/plain') || draggingId;
+  if (!id) return;
+  const card = document.querySelector(`[data-id="${id}"]`);
+  if (!card) return;
+  const empty = zone.querySelector('.empty-msg');
+  if (empty) empty.remove();
+  zone.appendChild(card);
+  card.classList.remove('dragging');
+  ['zone-todo', 'zone-done'].forEach(zid => {
+    const z = document.getElementById(zid);
+    if (!z.querySelector('.drag-card') && !z.querySelector('.empty-msg')) {
+      const ph = document.createElement('div');
+      ph.className = 'empty-msg';
+      ph.id = zid + '-empty';
+      ph.textContent = 'Drop tasks here';
+      z.appendChild(ph);
+    }
+  });
+  draggingId = null;
+}
+
+/* ════════════════════════════════════════════
+   02 · GEOLOCATION
+════════════════════════════════════════════ */
+function geoLocate() {
+  const status = document.getElementById('geo-status');
+  const grid   = document.getElementById('geo-grid');
+
+  if (!navigator.geolocation) {
+    status.className = 'geo-status-bar err';
+    status.style.display = 'block';
+    status.textContent = 'Geolocation is not supported in this browser.';
+    return;
+  }
+
+  status.className = 'geo-status-bar';
+  status.style.display = 'block';
+  status.textContent = 'Requesting position… (grant permission if prompted)';
+  grid.style.display = 'none';
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      status.style.display = 'none';
+      grid.style.display = 'grid';
+      const c = pos.coords;
+      document.getElementById('g-lat').textContent = c.latitude.toFixed(6) + '°';
+      document.getElementById('g-lon').textContent = c.longitude.toFixed(6) + '°';
+      document.getElementById('g-acc').textContent = Math.round(c.accuracy) + ' m';
+      document.getElementById('g-alt').textContent = c.altitude !== null ? Math.round(c.altitude) + ' m' : 'N/A';
+      document.getElementById('g-spd').textContent = c.speed !== null ? c.speed.toFixed(1) + ' m/s' : 'N/A';
+      document.getElementById('g-ts').textContent  = new Date(pos.timestamp).toLocaleTimeString();
+    },
+    err => {
+      const msgs = { 1: 'Permission denied by user.', 2: 'Position unavailable.', 3: 'Request timed out.' };
+      status.className = 'geo-status-bar err';
+      status.textContent = msgs[err.code] || 'Unknown error occurred.';
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
+/* ════════════════════════════════════════════
+   03 · WEB STORAGE
+════════════════════════════════════════════ */
+const NS = 'h5demo_';
+
+function wsTab(type) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.storage-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + type).classList.add('active');
+}
+
+function wsRender(type) {
+  const store   = type === 'ls' ? localStorage : sessionStorage;
+  const listEl  = document.getElementById(type + '-list');
+  const countEl = document.getElementById(type + '-count');
+  listEl.innerHTML = '';
+  const keys = Object.keys(store).filter(k => k.startsWith(NS));
+  keys.forEach(k => {
+    const val = store.getItem(k);
+    const row = document.createElement('div');
+    row.className = 'store-entry';
+    row.innerHTML =
+      `<span class="entry-key-col">${k.slice(NS.length)}</span>` +
+      `<span class="entry-val-col">${val}</span>` +
+      `<button class="del-btn" onclick="wsDel('${type}','${k}')">✕</button>`;
+    listEl.appendChild(row);
+  });
+  countEl.textContent = keys.length + ' entr' + (keys.length === 1 ? 'y' : 'ies');
+}
+
+function wsSave(type) {
+  const k = document.getElementById(type + '-key').value.trim();
+  const v = document.getElementById(type + '-val').value.trim();
+  if (!k || !v) return;
+  const store = type === 'ls' ? localStorage : sessionStorage;
+  store.setItem(NS + k, v);
+  document.getElementById(type + '-key').value = '';
+  document.getElementById(type + '-val').value = '';
+  wsRender(type);
+}
+
+function wsDel(type, fullKey) {
+  (type === 'ls' ? localStorage : sessionStorage).removeItem(fullKey);
+  wsRender(type);
+}
+
+function wsClear(type) {
+  const store = type === 'ls' ? localStorage : sessionStorage;
+  Object.keys(store).filter(k => k.startsWith(NS)).forEach(k => store.removeItem(k));
+  wsRender(type);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const t = e.target;
+  if (t.id === 'ls-key' || t.id === 'ls-val') wsSave('ls');
+  if (t.id === 'ss-key' || t.id === 'ss-val') wsSave('ss');
+});
+
+wsRender('ls');
+wsRender('ss');
+</script>
+</body>
+</html>
